@@ -10,7 +10,12 @@ import UIKit
 
 class TasksTableViewController: UITableViewController
 {
-    private var dataSource = TasksTableViewDataSource()
+	private lazy var dataSource: TasksTableViewDataSource = { [unowned self] in
+		let ds = TasksTableViewDataSource()
+		ds.taskStore = NSUserDefaultsTaskStore()
+		ds.tableView = self.tableView
+		return ds
+	}()
 }
 
 // MARK: Factory methods
@@ -63,16 +68,16 @@ extension TasksTableViewController
     {
         let actionSheet = UIAlertController(title:nil, message:nil, preferredStyle:.ActionSheet)
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { [weak self] (action) -> Void in
-            if let selectedIndexPath = self?.tableView.indexPathForSelectedRow()
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { [unowned self] (action) -> Void in
+            if let selectedIndexPath = self.tableView.indexPathForSelectedRow()
             {
-                self?.tableView.deselectRowAtIndexPath(selectedIndexPath, animated: true)
+                self.tableView.deselectRowAtIndexPath(selectedIndexPath, animated: true)
             }
         }
         actionSheet.addAction(cancelAction)
         
-        let deleteAction = UIAlertAction(title: "Delete", style: .Destructive) { [weak self] (action) -> Void in
-            self?.dataSource.deleteTaskAtIndex(index)
+        let deleteAction = UIAlertAction(title: "Delete", style: .Destructive) { [unowned self] (action) -> Void in
+            self.dataSource.deleteTaskAtIndex(index)
         }
         actionSheet.addAction(deleteAction)
 
@@ -132,8 +137,6 @@ extension TasksTableViewController
     private func _setupTableView()
     {
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier:"UITableViewCell")
-        dataSource.taskStore = NSUserDefaultsTaskStore()
-        dataSource.tableView = tableView
         tableView.dataSource = dataSource
     }
 }

@@ -42,25 +42,16 @@ class TasksTableViewDataSource: NSObject, UITableViewDataSource
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
         let cell = tableView.dequeueReusableCellWithIdentifier("UITableViewCell", forIndexPath: indexPath) as! UITableViewCell
-        
-        if let title = taskStore?.taskTitleAtIndex(indexPath.row)
-        {
-            cell.configureWithTaskTitle(title)
-        }
-        else
-        {
-            cell.textLabel?.text = ""
-        }
-        
+		cell.configureWithTaskTitle(taskStore?.taskTitleAtIndex(indexPath.row))
         return cell
     }
 }
 
 extension UITableViewCell
 {
-    func configureWithTaskTitle(title: String)
+    func configureWithTaskTitle(title: String?)
     {
-        textLabel?.text = title
+        textLabel?.text = title ?? ""
     }
 }
 
